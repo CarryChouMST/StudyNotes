@@ -66,18 +66,19 @@
   #define BIM_DOC_EXPORT   ZW_IMPORT
   ~~~
 
-- `add_dependencies` 是 CMake 中的一个命令，用于指定构建目标之间的依赖关系。该命令可以确保在构建一个目标之前，先构建它依赖的其他目标。这在构建复杂项目时特别有用，可以确保构建顺序的正确性。
+- `add_dependencies` 是 CMake 中的一个命令，用于指定构建目标之间的依赖关系。该命令可以确保在构建一个目标之前，先构建它依赖的其他目标。这在构建复杂项目时特别有用，可以确保构建顺序的正确性。语法
 
-  ### 语法
+```
+cmake
+复制代码
+add_dependencies(<target> <dependency> [<dependency>...])
+```
 
-  ```
-  cmake
-  复制代码
-  add_dependencies(<target> <dependency> [<dependency>...])
-  ```
+- `<target>`：需要等待其他目标完成构建后再构建的目标。
+- `<dependency>`：`<target>` 依赖的一个或多个其他目标。
 
-  - `<target>`：需要等待其他目标完成构建后再构建的目标。
-  - `<dependency>`：`<target>` 依赖的一个或多个其他目标。
+- `FILE(GLOB_RECURSE ...)` 是 CMake 中用于收集文件路径的命令，尤其适用于递归搜索特定目录及其子目录中的文件。FILE(GLOB_RECURSE ALL_HEADER ${PROJDIR}/*.h)这个表示从指定目录开始，递归查找所有的.h文件，并赋予变量。
+- source_group(main FILES ${SOURCES}) source_group命令创建筛选器
 
 # 最小CMake工程
 
@@ -396,4 +397,6 @@ target_link_libraries(MyApp PRIVATE ${DYNAMIC_LIB_IMPORT})
 - 这个文件比如你的项目有很多文件夹，必须在每个源代码文件夹下都有一个CMakeLists.txt.==它会根据CMake命令中的add_subdirectory自动的递归分析==。
 - 在CMake中命令是不区分大小写的，而变量跟C一样是区分大小写的。
 - cmake中主要处理了模块的依赖和链接关系，以及添加模块依赖的头文件路径（最原始的命令是include_directories）。这样在编译（翻译cpp文件）时才能将#include的文件找到并拉入翻译单元。**同时在include_directories中添加了头文件路径后，在 add_library(Hello hello.cxx/或者变量)指定cmake所在文件夹要形成的项目/库名称，以及对应的翻译单元（cpp文件）**
+
+
 

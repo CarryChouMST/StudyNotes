@@ -67,3 +67,12 @@
       > *：表示当前目录所有文件，也可以是某个文件名
 
 - netstat -ntp, 网络状态，-n不显示localhost只显示ip，-t表示tcp, -p表示进程号processId
+
+# Vim
+
+- i进入编辑，编辑完毕后按esc
+- 要保存退出，按:wq就行
+
+# Shell命令
+
+- 运行Shell的.sh文件可以 sh xxx.sh

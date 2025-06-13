@@ -135,6 +135,7 @@
 - git reset 直接把之前 commit 删掉，非git reset --hard的操作是不会删掉修改代码，如果远程已经有之前代码，需要强推 git push origin 【分支名】 --force
 
 - 在运行git reset head后，如果出现unstaged changes after reset。这是因为在master以外的新分支上，repos感知不到这个阶段的改变，你要用add和stash，让能让其知晓，从而做想要的回滚。
+
 - 在git reset后，**之前新建的文件git不会删除而是会解除追踪，需要手动使用文件操作rm删除**。而修改的文件则会回复修改
 
 # 提交的技巧
@@ -432,3 +433,9 @@
 # git报错
 
 - git pull报错error: cannot lock ref ‘refs/remotes/origin/xxx‘:ref，这种情况是在pull代码时，本地远端不能追踪仓库，这一般是由于仓库已经将该分支删掉，但是本地的orgin却还存在，此时会报错，可以使用git remote prune origin进行修改。
+
+# git使用场景
+
+- 有的已经推向远端的代码需要回退，可以选择该commit，进行git revert xx（该commit），会创建一个相反的提交，回退掉该提交的代码。
+- 在git reset后强制推送时，一般选择git push ---force-with-lease，不要选择-force，前者更加安全，会识别远端是否存在本地中没有的提交。
+
