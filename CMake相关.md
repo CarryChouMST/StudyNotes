@@ -394,9 +394,27 @@ target_link_libraries(MyApp PRIVATE ${DYNAMIC_LIB_IMPORT})
 # CMAKE运行逻辑
 
 - 首先，一个CMake要想运行，必须在同目录下有CMake脚本，说说是脚本，其实并没什么可怕，说白了就是一串CMake作者自己写的token语法分析文件--CMakeLists.txt。
+
 - 这个文件比如你的项目有很多文件夹，必须在每个源代码文件夹下都有一个CMakeLists.txt.==它会根据CMake命令中的add_subdirectory自动的递归分析==。
+
 - 在CMake中命令是不区分大小写的，而变量跟C一样是区分大小写的。
+
 - cmake中主要处理了模块的依赖和链接关系，以及添加模块依赖的头文件路径（最原始的命令是include_directories）。这样在编译（翻译cpp文件）时才能将#include的文件找到并拉入翻译单元。**同时在include_directories中添加了头文件路径后，在 add_library(Hello hello.cxx/或者变量)指定cmake所在文件夹要形成的项目/库名称，以及对应的翻译单元（cpp文件）**
 
+- cmake在构建时，一般使用out-of-source build，生成的MakeFile文件。对于一个code文件夹。
 
+  ~~~cmake
+  mkdir build && cd build
+  cmake ../code -DCMAKE_BUILD_TYPE=Release
+  cmake --build . -- -j$(nproc)
+  (--build . 是让 CMake 调用实际的构建工具（make/ninja/msbuild）去编译当前目录（.）里的工程；
+  后面的 -- 是分隔符，表示后面的参数不要给 cmake 本身，而是直接转发给底层的构建工具；
+  -j(nproc)是底层构建工具的并行参数（让它用多核并行编译），其中-j是底层构建工具的并行参数（让它用多核并行编译），其中(nproc) 在类 Unix shell 下会被替换为 CPU 核心数。)
+  
+  注意：第三行cmake --build .实际上是一个更安全，跨平台的写法，基于cmake时的生成器去自动调用工具构建（在 Unix Makefiles 下它内部会运行 make；在使用 Ninja 时会运行 ninja；在 Windows 会运行 MSBuild/Visual Studio 等）。在Makefile下，等同于make -j$(nproc)
+  ~~~
+
+- CMAKE（而非构建）运行后，顶层一般会看到CMAKEFiles/(用于驱动构建的中间文件)，CMakeCache、Makefile等文件，另外如果还有下层CMake(顶层CMAKELIST中有Add_SubDirectory等命令)，也会递归的生成对应的文件夹，以及下层CMAKE中间文件。
+- 基于Make构建后的生成内容和位置：构建后的内容包括可执行文件、库文件、中间文件(.o等)、Cmake中间文件等。
+- 这些构建生成的文件会被默认放到每一个CMAKE对应的二进制目录下（CMAKE_CURRENT_BINARY_DIR），一般默认为对应MakeFile的当前目录，具体相对文件数完全等同，类似只是换了一个根目录，相对目录不变。
 

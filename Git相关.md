@@ -42,6 +42,7 @@
   - git checkout .放弃当前目录下的修改
   - git checkout master 将分支切换到master
   - git checkout -f branch-name 强制切分支
+  - git checkout是切分支，如果切到其他分支时，会校验本地改动防止被覆盖，如果是切到HEAD分支版本时，会默认为需要丢弃所有本地改动。
 
 - 切换到分支A：git switch A或者git checkout A。**实际上是改变了HEAD的指向，A除了为分支名之外也可以为提交记录的哈希值**
 
@@ -437,5 +438,22 @@
 # git使用场景
 
 - 有的已经推向远端的代码需要回退，可以选择该commit，进行git revert xx（该commit），会创建一个相反的提交，回退掉该提交的代码。
+
 - 在git reset后强制推送时，一般选择git push ---force-with-lease，不要选择-force，前者更加安全，会识别远端是否存在本地中没有的提交。
+
+- 本地增加了一些文件，但需要删除，可以使用git clean -fd, 在操作之前，可以先使用git clean -fdn先看看该操作会删除哪些文件。
+
+- 在访问linux终端时，需要切分支但保留本地改动，git stash push -u -m "backup"，其中-u标识--include-untracked。
+
+  ~~~txt
+  git stash 是一个带子命令的命令空间（porcelain subcommand）。真正的动作由子命令决定，比如：
+  git stash push （把改动保存到 stash）
+  git stash pop （应用并删除最近的 stash）
+  git stash apply （应用 stash，但不删除）
+  git stash list （列出 stash 条目）
+  git stash show （显示某个 stash 的差异）
+  git stash drop （删除某个 stash）
+  ~~~
+
+  
 

@@ -321,4 +321,4 @@ hole.fits(large_sqpeg_adapter) // false
   // 利用SFINAE的思想，declval.size()如果能编译通过，存在T特化，则能使用ReverseSelf.
   ~~~
 
-  
+- 【索引遍历】最好不要用.size() -1 因为.size()是一个无符号数值。

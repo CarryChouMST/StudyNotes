@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # 文件管理
 
 - touch命令的功能是用于创建空文件和修改时间戳
@@ -76,3 +77,13 @@
 # Shell命令
 
 - 运行Shell的.sh文件可以 sh xxx.sh
+
+- 在类 Unix shell（如 bash、sh、zsh）里，export 是用来把一个 shell 变量标记为环境变量（environment variable）的命令。被 export 的变量会传递给该 shell 启动的子进程，而未 export 的普通变量只在当前 shell 里可见。
+
+  ~~~cpp
+  定义并导出：export VAR=value
+  例如：
+  export ASAN_OPTIONS="log_path=./asan_log:verbosity=1"
+  ~~~
+
+  

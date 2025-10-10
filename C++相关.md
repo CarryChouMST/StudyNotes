@@ -30,6 +30,8 @@
 
 - 一般CPU一秒能做百万~亿级运算，按性能不同，我们一般以千万量化。
 
+- static const interal一般不占存储，当作字面常量看待，因此可以类内初始化（不需要地址）；而非整形(double, string)等需要地址，不能做类内初始化。是否需要地址，本质上是生成CPU指令时直接将立即数(immediate)嵌入到指令里，还是插入地址表征，与CPU指令与链接模型有关。
+
 # C++常用语法
 
 - C++输出中文乱码时，是因为cmd的编码与mingw编译器输出编码不同。cmd默认是gbk编码，而mingw编译器输出内容默认使用utf-8编码。解决方法如下：
@@ -1666,57 +1668,10 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 - **类的前置声明**只能作为指针或引用，不能定义类的对象，比如定义了class A；如果没有定义A的具体内容，则在该文件中只能以A* p的形式使用，此时编译器知道分配一个指针地址给这个变量就行，但如果使用A p会报错，因为编译器并不知道该给p分配多少内存。
 
-  **何时使用前置声明和#include**
-
-  ~~~cpp
-  // 需要获得某个类型的定义才使用头文件
-  如下，哪些需要C的定义：
-  
-  一、A继承至C
-  二、A有一个类型为C的成员变量
-  三、A有一个类型为C的指针的成员变量
-  四、A有一个类型为C的引用的成员变量
-  五、A有一个类型为std::list的成员变量
-  六、A有一个函数，它的签名中参数和返回值都是类型C
-  七、A有一个函数，它的签名中参数和返回值都是类型C，它调用了C的某个函数，代码在A的头文件中
-  八、A有一个函数，它的签名中参数和返回值都是类型C(包括类型C本身，C的引用类型和C的指针类型)，并且它会调用另外一个使用C的函数，代码直接写在A的头文件中
-  九、C和A在同一个名字空间里面
-  十、C和A在不同的名字空间里面
-   
-  情况一：必须要知道C的定义，因为A作为子类，必须要知道C的内容，才能继承
-  情况二：必须要知道C的定义，因为需要根据C来确定A的大小，一般用Pimpl模式 改善。
-  情况三和情况四：不需要知道C的定义，只需要前置声明就可以了。引用在物理上（即在内存中）也是一个指针，效果和指针一样。即便没有C的定义，A也不会有任何问题。
-  情况五：不需要知道C的定义，有可能老式的编译器需要。标准库里面的容器（如：list、vector、map），在包括一个list，vector，map类型的成员变量的时候，都不需要C的定义。因为它们内部其实也是使用C的指针作为成员变量，它们的大小一开始就是固定的了，不会根据模版参数的不同而改变。
-  情况六：不需要知道C的定义
-  情况七：必须要知道C的定义，需要知道调用函数的签名。
-  
-  情况八：对于引用和指针情况一样
-  例如：
-  类C中有：C& CdoSomething(C&);
-  类A中有：C& AdoSomething (C& c) { return CdoSomething (c);};
-  以上情况，不需要知道C的定义，但是对上面的函数任意一个C&换成C，比如像下面的几种示例：
-  
-  类C中有：C& CdoSomething (C&);
-  
-  类A中有：C& AdoSomething (C c) {return CdoSomething (c);};
-  
-  类C中有：C& CdoSomething (C);
-  
-  类A中有：C& AdoSomething (C& c) {return CdoSomething (c);};
-  
-  类C中有：C CdoSomething (C&);
-  
-  类A中有：C& AdoSomething (C& c) {return CdoSomething (c);};
-  
-  类C中有：C& CdoSomething (C&);
-  
-  类A中有：C AdoSomething (C& c) {return CdoSomething (c);};
-  
-  那么就必须要C的定义。无论哪一种，其实都隐式包含了一个拷贝构造函数的调用，比如1中参数c由拷贝构造函数生成，3中CdoSomething的返回值是一个由拷贝构造函数生成的匿名对象。因为我们调用了C的拷贝构造函数，所以以上无论那种情形都需要知道C的定义。
-  ~~~
+  **编译器在编译时也能识别头文件的顺序，因此即使在同一个头文件，做一个前置声明，后面在class中做成员变量时，哪怕头文件后面有定义，编译器在处理成员变量时也会直接报错。**
 
   
-
+  
 - 在std里，判断两个指针是否相等是通过判断两个指针里的内容（即指针指向的地址）是否相等来判断，两个指向相同地址的指针使用==比较符返回会为true
 
 - 在使用=delete运算符删除C++类的拷贝构造等方法时，首先声明了该方法，因此此时编译器不会合成默认构造函数，需要显式声明和定义（比如=default）
@@ -1901,6 +1856,8 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 - 关于编码以及编码转换
 
   > UTF-8与GBK的区别:
+  >
+  > 要判断UTF-8 字符集中的字符占用几个字节，需要查看该字符的首字节的二进制表示，具体规则为：**首字节以 0 开头的为 1 个字节；以 110 开头的为 2 个字节；以 1110 开头的为 3 个字节；以 11110 开头的为 4 个字节**。﻿
   >
   > GBK就是在保存你的帖子的时候，一个汉字占用两个字节。外国人看会出现乱码，此为我中华为自己汉字编码而形成之解决方案。
   >
@@ -2224,11 +2181,21 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 - 在C++中，模板本身不能被继承或派生。==模板是用来生成类或函数定义的蓝图==，它们在编译时被实例化以生成具体的类或函数。因此，模板本身并不是类或对象，所以无法被继承或派生。 
 
-- 优先队列是一种特殊的队列，其中每个元素都有一个优先级，高优先级的元素先出队。在C++中，可以使用STL中的priority_queue实现优先队列，它底层是用堆（heap）实现的。
+- 【优先队列、priority_queue】优先队列是一种特殊的队列，其中每个元素都有一个优先级，高优先级的元素先出队。在C++中，可以使用STL中的priority_queue实现优先队列，它底层是用堆（heap）实现的。
 
   堆是一种完全二叉树，可以分为小根堆和大根堆。在大根堆中，每个节点的值都不小于它的子节点，堆顶元素是堆中最大的元素。在小根堆中，每个节点的值都不大于它的子节点，堆顶元素是堆中最小的元素。
 
-  在C++中，priority_queue默认使用大根堆。可以通过指定模板参数，改为使用小根堆。
+  在C++中，==priority_queue默认使用大根堆==。可以通过指定模板参数，改为使用小根堆。**但要注意，如果使用自定义容器，则需要兼容stl的容器接口。**比如：
+
+  ~~~cpp
+  typedef GMappingItem         value_type;
+  typedef value_type&          reference;
+  typedef const value_type&    const_reference;
+  typedef size_t               size_type;   // 或其他合适的类型
+  // 还需要支持 begin(), end(), push_back, pop_back, size, front, back 等
+  
+  std::priority_queue<int, std::vector<int>, std::greater<int>> minHeap;
+  ~~~
 
 - 获取Map中的最后一个元素可以使用rbegin()和rend()函数。其中，rbegin()函数返回反向迭代器指向Map的最后一个元素，而rend()函数返回反向迭代器指向Map的第一个元素前一个位置。因此，只需要使用rbegin()函数来访问Map的最后一个元素即可。
 
@@ -2461,6 +2428,19 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 - **枚举值的值如果使用表达式类似a+5, a<<1等，其值在编译期就会被确认，不会影响运行期性能。**
 
+- 【仿函数与函数指针】仿函数并不等于函数指针，两者之间没有任何隐式转换，因为函数指针本质上的指针，而仿函数是一个类型对象，==除非是该对象内定义了成员函数，且手动写了operator转换，才可以隐式转换为int(*pCmp)(x, x)==，**还有一个C++11支持的方法是使用lambda帮忙转换一下，比如：**
+
+     ~~~cpp
+     auto cmp = [](const GMappingItem& A, const GMappingItem& B)
+     {
+         return HibridUDJunctionHelpers::GMappingItemCmp_Greater()(A, B) ? 1 : 0;;
+     };
+     int(*pCmp)(const GMappingItem& a, const GMappingItem& b) = cmp;
+     qItems.setCompareFunction(pCmp);
+     ~~~
+
+     
+
 - 【右值引用，引用折叠，完美转发，移动语义】
 
   - 了解引用折叠（reference collapsing）
@@ -2642,7 +2622,61 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
     }
     ~~~
 
+- ==匿名命名空间只是限定了里面的内容链接为本翻译单元（通常用来防止同名符号冲突），它并不影响你访问外部命名空间内的内容==。因此可以在匿名空间结束后，再开一个主题空间，然后如下使用：
 
+  ~~~cpp
+  #include "HibridUDJunctionHelpers.h" 
+  
+  namespace
+  {
+      Gbool IsItemRangeMutex(const GMappingItem& oCurItem, const HibridUDJunctionHelpers::GMappingList& vLists)
+      {
+          // ... This can use HibridUDJunctionHelpers::GMappingList because the declaration is visible.
+      }
+  }
+  
+  namespace HibridUDJunctionHelpers
+  {
+      void foo()
+      {
+          // 只要 IsItemRangeMutex 在上面定义过，这里就可以直接用
+          IsItemRangeMutex(...);
+      }
+      // 你的其它补充实现
+  }
+  ~~~
+
+- 【C++科学计数法】C++的1e5是科学计数法，即e在这里表示十的多少次方。而要真正表示欧拉常数e，用exp(5)这种表示真正的e的五次方。
+
+- 【double的容差hash】
+
+  > ~~~cpp
+  >     struct GdoubleToleranceHasher
+  >     {
+  >         std::size_t operator()(const Gdouble& key) const
+  >         {
+  >             auto bucket = static_cast<long long>(key / Constant::Epsilon());
+  >             return std::hash<long long>()(bucket);  // 注意这里一定要转为longlong, 因为要先转为一个有符号的类型，然后才调用整数的hash
+  >         }
+  >     };
+  > ~~~
+  >
+  
+- 【lambda、模板】
+
+    lambda表达式用作模板参数，可以直接用自动推导，然后正常传实参就行。
+
+    ~~~cpp
+    auto cmp = [&](const HDGEO::Vector3& A, const HDGEO::Vector3& B)
+    {
+        return A.DistanceTo(oReferLineCutPt.oReferPt) < B.DistanceTo(oReferLineCutPt.oReferPt);
+    };
+    vJunction1.sort(cmp);
+    ~~~
+
+- 【前置声明】
+
+  C++语义上区分：引入一个新类型还是引用现有类型，因此不支持在前置声明时使用::表示作用域，在前置声明一个带作用域的对象时必须同样写namesapce包裹。
 
 ## C++输入输出
 
@@ -2717,6 +2751,8 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 - 在32位机器中，%d, 和%ld都表示32位（int, long），而%lld表示64位整型占位符。但是在64位机器中%ld表示的long就是64位的
 
+- 浮点数 `%f`，双精度最好用“%lf”
+
 - 【C++格式化输出】
 
   %d	以十进制形式输出带符号整数(正数不输出符号)
@@ -2784,6 +2820,10 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
        s.fin_last_not_of(s1)         查找s中最后一个不属于s1中的字符的位置，并返回（包括0）
 
 - `strcmp`函数是C标准库中的一个字符串比较函数，**字典序**比较两个以空字符 (`'\0'`) 结尾的字符串。
+
+- s.compare {pos, n, s2);
+
+  若参与比较的两个串值相同，则函数返回 0；若字符串 S 按字典顺序要先于 S2，则返回负值；反之，则返回正值。下面举例说明如何使用 string 类的 compare() 函数，参数中出现了位置和大小，比较时只能用指定的子串。
 
 ## C++11特性
 
@@ -2867,20 +2907,41 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 # Type_Traits
 
-- 【引用】`std::ref` 和`std::cref` 通常用来产生一个reference_wrapper对象
-- 【引用】`reference_wrapper `常通过引用传递对象给`std::bind`函数或者`std::thread`构造函数
-- 【引用】普通的引用不是对象，所以无法存入任何标准库容器（除常引用const A&）。`reference_wrapper`包装的引用就可以被存入容器中，并通过.get()方法取引用。
+- 【引用包装】`std::ref` 和`std::cref` 通常用来产生一个reference_wrapper对象
+- 【引用包装】`reference_wrapper `常通过引用传递对象给`std::bind`函数或者`std::thread`构造函数
+- 【引用包装】普通的引用不是对象，所以无法存入任何标准库容器（除常引用const A&）。`reference_wrapper`包装的引用就可以被存入容器中，并通过.get()方法取引用。
 - 【const常引用，reference_wrapper，成员变量】const常引用和reference_wrapper都可以使用引用来作为类的成员变量。但是他们的灵活性不一样，const常引用由于其不可变的性质，只能在==构造时初始化列表或者默认构造==进行绑定，绑定是**立即完成，且不可变更的**。而std::reference_wrapper\<A\>是可以重新绑定的。另外const常引用不具备值语义，没有拷贝构造和赋值操作，因此不兼容基本容器（需要支持拷贝），而std::reference_wrapper是一个模板对象，具有值语义，可以兼容基本容器。基于reference_wrapper可以把对象当指针使用，享用同一份资源。与直接使用裸指针相比，他不负责管理生命周期，相对的，调用者需要保证逻辑内引用对象资源的完整，适合局部流程使用。裸指针自己管控着生命周期，在使用作用域上更加灵活。
+- 【引用包装】std::ref/cref是一个生成器，reference_wrapper是一个引用对象，但注意referece_wrapper同样没有默认构造函数，做成员变量时必须在构造函数或者默认初始化中对齐初始化，一般可可以用来标识构造时必须持有一个明确对象【==但是又不负责管理该对象生命周期==】。
 
 # MFC相关
 
 - AfxMessageBox是MFC框架提供的全局消息处理函数，有多个重载形式。会类似弹一个这种窗。![image-20250303165233090](.C++%E7%9B%B8%E5%85%B3/image-20250303165233090.png)
+
 - 就像基于PyQt写一个应用程序时，使用QApplication创建一个app应用实例，并通过QApplication中提供的exec_方法可以实现启动应用程序，并显示窗口。在使用基于MFC的C++语言写应用程序时，同样首先需要从CWinApp中派生一个类型。
+
 - 【主应用程序】MFC的启动运行流程为：首先启动程序，然后进行CRT（C run-time library C运行时库）初始化（堆区和全局变量等），然后全局变量分配地址，最后调用MFC应用程序的入口程序tWinMain()。在tWinMain中会缓存程序中定义的CWinApp继承类型全局变量的地址，然后调用虚函数InitInstance(); 之后会进入主线程消息循环。
+
 - CRT的作用：CRT在程序入口函数之前就已经初始化所有全局对象，这些对象会被放入数据段或BSS端中，链接器会记录这些全局对象的地址。CRT中进行初始化时，包括分配对战、初始化全局变量（基于确定的地址堆全局变量赋值。）
+
 - 编译器在生成目标文件时，当遇到CMyApp theApp(CMyApp为CWinApp的派生)时，会将这个全局变量放在.data或.bss段中，并为其分配一个符号名(一般是_theApp)。链接器会将多个.obj合并成一个.exe, 同时解决符号引用（比如函数调用、全局变量访问等），以及**确定每个全局变量的最终内存地址。【链接器并不关心类型，只负责符号的地址匹配，此时这个地址分配只是会被记录在exe文件的头部中（有点像走后门保送），但真正的内存分配还是在CRT初始化中】**
+
 - MFC运行机制本质上以来编译器、链接器和可执行文件exe三方的底层写作协议。这个过程是静态的、确定性的，在编译和链接阶段完成的，不是运行时动态查找的。编译时编译器就特殊标记CWinApp继承对象，链接器拿到这个对象的符号并确定地址，最后tWinMain里面找链接器那这个符号并缓存。
+
 - 【窗口】MFC的主窗口在CWinApp::InitInstance中创建，并通过m_pMainWnd成员变量保存，主窗口应该是CDialog的派生类型。在主窗口的构造函数中，可以塞很多个性化的窗口按钮，并提供丰富的槽函数实现功能。
+
+- 【表CListCtrl】CListCtrl::GetFirstSelectedItemPosition()为所有已选项中，第一个选中项的位置；而一般搭配GetNextSelectedItem，该方法提供用来拿到指定位置的索引。
+
+- 【菜单CMenu】在MFC窗口中添加右键相应，本质上可以在.rc资源中添加menu，在menu资源中填写资源ID号和相应函数。另外为了让用户选择的指令起作用，还要在对话框的cpp中添加菜单与响应函数的关联
+
+  ~~~cpp
+  ON_COMMAND(ID_32772, &CtestMenuDlg::OnSaveBaseImg)
+  ~~~
+
+  同时在管理类中声明和定义响应函数。
+
+- 【MFC添加图片】添加图片一般是指定路径后，使用Window API的LoadImage从指定路径加载一个图像资源，包括位图(bitmap)、图标(icon)和光标(cursor)。该LoadImage会返回一个句柄，MFC的CBitMap对象提供了Detach和Attach方法来管理对象与HBITMAP句柄的联系，具体的Attach建立，Detach取消。
+
+- 【MFC右键】要使用MFC的右键做自定义的事，可以在主窗口的Dialog的给定消息处理函数afx_msg void OnRButtonDown(Guint32 nFlags, CPoint point);，里面处理自己希望处理的事。
 
 # QT相关
 
@@ -3556,7 +3617,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
       __pragma(optimize("", ROAD_GET_OPTIMIZE_STATE(NAME)))
   ~~~
 
-  
+- 【宏与函数的异同】宏没有函数调用与类型检查、函数需要函数调用与类型检查，如果执行内联，也需要有类型检查，宏的编译和运行开销是最小的。
 
 # C++文件操作
 
@@ -3645,14 +3706,16 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 # C++程序执行过程
 
-1. 程序加载：操作系统加载
+1. 程序加载：操作系统加载程序到内存。
 
-程序到内存。
-
-2. 全局静态变量初始化
-3. main函数执行
+2. 静态初始化（全局/局部对象）
+3. 全局静态对象动态初始化（这里初始化顺序取决于文件依赖）
+4. main函数执行
+5. 局部静态对象动态初始化
 
 **comment：**定义在cpp文件的全局静态变量的初始化时机是在程序启动时，并且是在main函数执行之前。具体初始化的顺序取决于它们在文件中的顺序和是否跨翻译单元。跨翻译单元的初始化顺序是不确定的，应该避免依赖。
+
+- 总的来说，静态变量(static)可以被静态/动态初始化，对静态常量会静态初始化(static const)，其时机在main执行前，初始化后的内存会放在只读数据段中。(对静态常整型会翻译为立即数，不给内存)。
 
 # C++常见问题
 
