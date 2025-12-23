@@ -42,25 +42,30 @@
   - git checkout .放弃当前目录下的修改
   - git checkout master 将分支切换到master
   - git checkout -f branch-name 强制切分支
-  - git checkout是切分支，如果切到其他分支时，会校验本地改动防止被覆盖，如果是切到HEAD分支版本时，会默认为需要丢弃所有本地改动。
+  - git checkout是切分支，如果切到其他分支时，会校验本地改动防止被覆盖，如果是切到HEAD分支版本时，会默认为需要丢弃所有本地改动。（git checkout .）
+
+- 一般做了很多事之后，希望还原改动，可能里面还有一些新增没有跟踪的文件，可以
+
+  ~~~git
+  git clean -fd
+  git checkout .
+  （或者git reset --hard HEAD && git clear -fd）
+  // 其中git clean标识删除文件
+  // -n 表示预览不删除；-d表示包括啊文件夹；-f表示执行删除
+  ~~~
+
+  
 
 - 切换到分支A：git switch A或者git checkout A。**实际上是改变了HEAD的指向，A除了为分支名之外也可以为提交记录的哈希值**
-
 - 将A合并到分支B：
   - git merge B，实际上就是在A的下面创建一个A和B共同的子节点C，包含了A和B的所有修改。**个人认为也可以理解为在A的下面重复B所作的所有修改**。==注意合并后的节点有两个父节点，第一个父节点一般是他的直接父节点，第二个父节点是基于共有节点下其他分支做的修改后的版本。==
   - git rebase A,变基，是当前分支基于的节点变为A最新的提交，即在A下创造当前分支的副本，**谨慎使用**。
   - git rebase A B        可以将B基于的节点变换为A最新的提交
-  
 - echo 有显示、回声的意思，在命令行中表示打印显示，比如echo This is a test后面会在控制台中显示This is a test；也可以将信息输入到指定文件中echo "This is a test." > ./test.txt。表示新建一个test.txt，里面有对应的内容。
-
 - git add .表示添加当前工作目录文件到暂存区；后常跟git commit -m "message", 进行提交；最后使用git push推送服务器
-
 - touch的命令是创建空文件，并修改时间戳
-
 - git status：查看仓库状态 可以查询当前仓库是否有改动
-
 - git log 查看本地仓库中所有的提交记录；**git show commitId**查看指定commit hashID的所有修改：**git show commitId fileName**查看指定commit中某个文件的修改
-
 - git branch -vv可以查看详细的分支信息，上游分支会被显示在分支名称胖的放括号中。
 
 # git理解
@@ -442,6 +447,18 @@
 - 在git reset后强制推送时，一般选择git push ---force-with-lease，不要选择-force，前者更加安全，会识别远端是否存在本地中没有的提交。
 
 - 本地增加了一些文件，但需要删除，可以使用git clean -fd, 在操作之前，可以先使用git clean -fdn先看看该操作会删除哪些文件。
+
+- git clean是git中删除文件的一个命令，参数如下：
+
+  ~~~cpp
+  -n 只预览，不删除;
+  -f 强制执行删除，不加f git clean不会删除任何东西
+  -d 删除未跟踪文件，同时删除未跟踪的目录，**默认只删文件**
+  -x 删除所有**未被跟踪的文件**
+  -X 只删除跟踪文件。
+  ~~~
+
+  
 
 - 在访问linux终端时，需要切分支但保留本地改动，git stash push -u -m "backup"，其中-u标识--include-untracked。
 

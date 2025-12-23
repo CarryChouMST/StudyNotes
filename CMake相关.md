@@ -4,6 +4,8 @@
 
 # CMake的重要指令
 
+- 下面这些add/link的命令，前者是添加/链接的目标名，后者是添加/链接这些所需要的源文件。
+
 - **==cmake_minimum_required==** - 制定CMake的最小版本要求
   - 语法：cmake_minimum_required(VERSION versionNumber [FATAL_ERROR])
 
@@ -29,7 +31,7 @@
   - 语法： add_library(libname [SHARED|STATIC|MODULE] [EXCLUDE_FROM_ALL] source1 source2 ... sourceN)
   - add_library(hello SHARED ${SRC}) **通过变量SRC生成libhello.so共享库，也就是将sayhello.cpp和hello.cpp合起来生成一个hell==动态库==文件
 
-- add_executable - 生成可执行文件
+- add_executable
   - 语法：add_executable(exename source1 source2 source3)
   - add_executable(main main.cpp) **编译main.cpp生成可执行文件main**
 
@@ -72,13 +74,28 @@
 cmake
 复制代码
 add_dependencies(<target> <dependency> [<dependency>...])
-```
-
 - `<target>`：需要等待其他目标完成构建后再构建的目标。
 - `<dependency>`：`<target>` 依赖的一个或多个其他目标。
+```
 
 - `FILE(GLOB_RECURSE ...)` 是 CMake 中用于收集文件路径的命令，尤其适用于递归搜索特定目录及其子目录中的文件。FILE(GLOB_RECURSE ALL_HEADER ${PROJDIR}/*.h)这个表示从指定目录开始，递归查找所有的.h文件，并赋予变量。
-- source_group(main FILES ${SOURCES}) source_group命令创建筛选器
+
+- source_group(main FILES ${SOURCES}) source_group命令创建筛选器。
+
+- `find_package`命令：
+
+  >在使用第三方库时，无论是通过apt-get install还是自己编译安装的，在真正引用到项目中时，都需要找到指定版本库的**头文件路径、链接库路径**等。
+  >
+  >CMake提供了find_package()命令查找依赖包的各种路径，并将路径赋值到特定命名对象中（\${XXX_DIR}, \${XXX_INCLUDE_DIRS}, \${XXX_LIBS}）
+  >
+  >~~~CPP
+  >然后这么用
+  >include_directories(${OPENCV_INCLUDE_DIRS})  
+  >add_executable(opencv_test opencv_test.cpp)  
+  >target_link_libraries(opencv_test ${OpenCV_LIBS})
+  >~~~
+  >
+  >
 
 # 最小CMake工程
 
@@ -418,3 +435,4 @@ target_link_libraries(MyApp PRIVATE ${DYNAMIC_LIB_IMPORT})
 - 基于Make构建后的生成内容和位置：构建后的内容包括可执行文件、库文件、中间文件(.o等)、Cmake中间文件等。
 - 这些构建生成的文件会被默认放到每一个CMAKE对应的二进制目录下（CMAKE_CURRENT_BINARY_DIR），一般默认为对应MakeFile的当前目录，具体相对文件数完全等同，类似只是换了一个根目录，相对目录不变。
 
+# 
