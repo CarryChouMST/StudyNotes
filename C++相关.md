@@ -1,4 +1,4 @@
-# C++操作系统
+C++操作系统
 
 - 一个由C/C++编译的程序占用的内存有以下几个部分：
 
@@ -2940,7 +2940,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
   然后基于.rc中Button对应的宏添加按钮的槽函数。
 
-  ![image-20251010135055060](C:\Users\zhoukailei\AppData\Roaming\Typora\typora-user-images\image-20251010135055060.png)
+  ![image-20251010135055060](C:\Users\zhoukailei\Desktop\StudyNotes\.C++相关\image-20251010135055060.png)
 
 - 【添加dialog后的交互】dialog是一个封装好的对话框样式，到代码中还需要创建以及设置交互行为。因此可以在其他的大dialog或者主初始化中执行创建new出来，同时设置好new出来对象对应的ID，会自动链接上设置的样式。后面在onInitDialog中设置里面要放置的内容，包括表等内容。
 
