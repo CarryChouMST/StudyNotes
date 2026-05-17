@@ -164,6 +164,12 @@
   },
   "active": "4eb0e9ae0ec9b6b1",
   "lastOpenFiles": [
+    "编译相关.md.BASE.md",
+    "编译相关.md.REMOTE.md",
+    "编译相关.md.LOCAL.md",
+    "生活经验/英文表达.md.BASE.md",
+    "生活经验/英文表达.md.REMOTE.md",
+    "生活经验/英文表达.md.LOCAL.md",
     "编译相关.md",
     "个人数据/图论.md",
     "机器学习系列/大模型应用.md",
@@ -194,8 +200,6 @@
     "C++相关1.2.md",
     "CMake相关.md",
     "完成任务与收获.md",
-    "Git相关.md",
-    "Linux命令相关.md",
     "Untitled.canvas"
   ]
 }

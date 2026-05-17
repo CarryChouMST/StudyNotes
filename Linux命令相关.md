@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # 文件管理
 
 - touch命令的功能是用于创建空文件和修改时间戳
