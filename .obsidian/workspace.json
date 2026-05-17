@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "工具生产力指南.md",
+                "file": "机器学习系列/Agent使用.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "工具生产力指南"
+              "title": "Agent使用"
             }
           }
         ]
@@ -162,17 +162,34 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "4eb0e9ae0ec9b6b1",
+  "active": "014b6e711e0e65a7",
   "lastOpenFiles": [
+    "投资系列/个股研究",
+    "投资系列/Untitled Folder",
+    "投资系列/实战典型教训.md",
+    "投资系列/Untitled.md",
+    "投资系列/技术面.md",
+    "投资系列/基本面.md",
+    "投资系列",
+    "Untitled Folder",
+    "机器学习系列/深度学习.md",
+    "机器学习系列/大模型应用.md",
+    "C++相关.md",
+    "C++写法经验模板.md",
+    "CMake相关.md",
+    "项目设计经验.md",
+    "编译相关.md",
+    "思维框架与描述.md",
+    "通用算法笔记.md",
+    "个人数据/图论.md",
+    "数学积累.md",
+    "工具生产力指南.md",
     "编译相关.md.BASE.md",
     "编译相关.md.REMOTE.md",
     "编译相关.md.LOCAL.md",
     "生活经验/英文表达.md.BASE.md",
     "生活经验/英文表达.md.REMOTE.md",
     "生活经验/英文表达.md.LOCAL.md",
-    "编译相关.md",
-    "个人数据/图论.md",
-    "机器学习系列/大模型应用.md",
     "技术资料/计算几何算法和实现.pdf",
     "SQL.md",
     "2026-05-17.md",
@@ -182,24 +199,7 @@
     "~WRD0851.tmp",
     "~WRL1289.tmp",
     "~WRD1285.tmp",
-    "~WRL0421.tmp",
-    "~WRD0417.tmp",
-    "~WRL3806.tmp",
-    "C++相关.md",
-    "项目设计经验.md",
     "笔记1.0版本/C++相关_1.0.md",
-    "生活经验/C++设计模式.md",
-    "2024-11-11.md",
-    "未来方向/学习目标.md",
-    "一些很规范的描述角度.md",
-    "C++设计模式.md",
-    "通用算法笔记.md",
-    "算法相关.md",
-    "工具生产力指南.md",
-    "2024-10-21.md",
-    "C++相关1.2.md",
-    "CMake相关.md",
-    "完成任务与收获.md",
     "Untitled.canvas"
   ]
 }
