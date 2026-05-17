@@ -1,0 +1,3 @@
+# RAG
+
+- Chroma, FAISS Facebook

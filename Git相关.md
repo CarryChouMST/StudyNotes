@@ -465,6 +465,7 @@
   ~~~txt
   git stash 是一个带子命令的命令空间（porcelain subcommand）。真正的动作由子命令决定，比如：
   git stash push （把改动保存到 stash）
+   - git stash push -m "msg"，即如果需要记录stash名字需要加-m参数，默认是stash所有add/未add的文件。
   git stash pop （应用并删除最近的 stash）
   git stash apply （应用 stash，但不删除）
   git stash list （列出 stash 条目）
@@ -472,5 +473,37 @@
   git stash drop （删除某个 stash）
   ~~~
 
-  
+- git diff默认是只能看到在版本控制系统内的修改，如果要看到untraked的文件，一般可以使用git add .添加到暂存区后，使用git diff --cached查看修改内容。
+
+- 合并合并到一半不希望合并了，终止合并为`git merge --abort`。
+
+- 【分支分离】如果本地分支已经有几个提交，且远端分支其他人也推送了很多提交，此时git status称为两个分支处理diverge(分离)状态，需要merge/rebase。
+
+- 【path/git apply】diff本质上可以被存储为patch文件，存起来后基于git apply即可应用。**但是当有冲突时会应用失败，可以加上--reject参数，会将能匹配的修改直接打到代码中，而不能匹配的部分会生成.rej文件。**
+
+  ```cpp
+  git apply --reject ~/temp.patch
+  ```
+
+  - patch是由多个hunk(补丁块)组成的，.rej文件的内容是**无法应用的patch hunk(补丁块)**，如下：
+
+    ```cpp
+    @@ -10,6 +10,7 @@
+     原文件的上下文
+     -旧内容
+     +新内容
+    ```
+
+    - git apply是纯补丁工具，git stash pop/apply会使用git的三方合并策略。可以这样git apply --3way patchfile.patch，但也只是将不干净(指无法直接应用的hunk)的内容不生成rej而是以merge conflict形式直接加在文件上。
+
+- 【git stash导出】在多仓库的项目管理下，一个老项目的修改要迁移到新项目，可以使用
+
+  ~~~cpo
+  git stash list
+  git stash show -p stash@{2} > stash2.patch
+  将stash的内容导出为patch
+  ~~~
+
+
+- 【gitignore】git ignore里面的如果不加前缀目录，比如`lib/`，就是全局匹配。如果是精准匹配需要用`/lib/`
 
